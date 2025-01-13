@@ -1,3 +1,4 @@
 LegoClassifier is a model that classifies lego pieces using images.
 This is a university project, aimed to deepen my understanding of AI and Machine Learning.
-The model is a CNN trained on various Datasets found on Kaggle (don't worry i wont forget to cite the sources).
+The model is a CNN trained on various Datasets found on Kaggle
+ (don't worry i wont forget to cite the sources).

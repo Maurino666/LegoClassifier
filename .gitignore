@@ -1,0 +1,15 @@
+# Ignora la cartella del dataset
+dataset/
+
+# Ignora file temporanei di sistema
+*.DS_Store
+Thumbs.db
+
+# Ignora file di log e di output
+*.log
+*.out
+*.h5
+
+# Ignora ambienti virtuali
+venv/
+__pycache__/
