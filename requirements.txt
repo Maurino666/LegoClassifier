@@ -2,3 +2,5 @@ torchvision~=0.20.1+cu118
 torch~=2.5.1+cu118
 protobuf~=5.29.2
 tqdm~=4.67.1
+matplotlib~=3.10.0
+scikit-learn~=1.6.0
