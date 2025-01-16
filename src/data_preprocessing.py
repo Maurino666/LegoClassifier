@@ -3,8 +3,8 @@ from torch.utils.data import DataLoader, Dataset, random_split
 import torch
 import kornia.augmentation as k
 
-DEFAULT_BATCH_SIZE = 512
-DEFAULT_NUM_WORKERS = 16
+DEFAULT_BATCH_SIZE = 256
+DEFAULT_NUM_WORKERS = 8
 DEFAULT_SPLIT_RATIO = 0.8
 
 class GPUTransformDataset(Dataset):

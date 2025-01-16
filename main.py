@@ -13,6 +13,7 @@ def main():
     # Parameters
     dataset_path = "Dataset/D1"  # Path to the dataset
     batch_size = 256  # Batch size for data loading
+    num_workers = 12  # Number of workers for data loading
     num_epochs = 20  # Number of epochs for training
 
     # Use GPU with CUDA if available, otherwise fallback to CPU
@@ -26,7 +27,7 @@ def main():
     print(f"Saving outputs to: {output_dir}")
 
     # Load the dataset and split into training and test sets
-    train_loader, test_loader, classes = get_split_data_loaders(dataset_path, batch_size)
+    train_loader, test_loader, classes = get_split_data_loaders(dataset_path, batch_size, num_workers)
     print("Classes loaded...")
 
     # Initialize the model with the number of output classes
@@ -40,7 +41,7 @@ def main():
     print("Training completed!")
 
     # Save the trained model to the output directory
-    model_path = os.path.join(output_dir, "simple_cnn.pth")
+    model_path = os.path.join(output_dir, "model.pth")
     save_model(model, path=model_path)
 
     # Evaluate the model on the test set
