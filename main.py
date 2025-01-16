@@ -1,6 +1,7 @@
 import os
 import torch
 from datetime import datetime
+from time import time
 from src.data_preprocessing import get_split_data_loaders
 from src.model import SimpleCNN
 from src.train import train_model
@@ -11,7 +12,7 @@ def main():
 
     # Parameters
     dataset_path = "Dataset/D1"  # Path to the dataset
-    batch_size = 512  # Batch size for data loading
+    batch_size = 256  # Batch size for data loading
     num_epochs = 20  # Number of epochs for training
 
     # Use GPU with CUDA if available, otherwise fallback to CPU
@@ -33,7 +34,9 @@ def main():
     print("Model initialized...")
 
     # Train the model on the training set
+    start_time = time()
     train_model(model, train_loader, device, num_epochs)
+    training_time = time() - start_time
     print("Training completed!")
 
     # Save the trained model to the output directory
@@ -47,7 +50,10 @@ def main():
 
     # Save the evaluation results to the output directory
     evaluation_path = os.path.join(output_dir, "evaluation_results.txt")
-    save_results(labels, predictions, classes, output_path=evaluation_path)
+    with open(evaluation_path, "w") as f:
+        f.write(f"Training Time: {training_time:.2f} seconds\n")
+        f.write(f"Test Accuracy: {accuracy:.2f}\n")
+        f.write(report)
 
 if __name__ == "__main__":
     main()
