@@ -39,14 +39,17 @@ def get_gpu_transform():
         torch.nn.Module: A sequential module containing Kornia transformations.
     """
     return torch.nn.Sequential(
-        k.RandomHorizontalFlip(p=0.5),
-        k.RandomRotation(degrees=10.0),
         k.Normalize(mean=torch.tensor([0.5, 0.5, 0.5]),
                     std=torch.tensor([0.5, 0.5, 0.5]))
     )
 
 
-def get_data_loader(dataset_path, batch_size=DEFAULT_BATCH_SIZE, num_workers=DEFAULT_NUM_WORKERS):
+def get_data_loader(
+        dataset_path,
+        batch_size=DEFAULT_BATCH_SIZE,
+        num_workers=DEFAULT_NUM_WORKERS,
+        custom_transform=None
+):
     """
     Prepares a DataLoader for a dataset.
 
@@ -54,6 +57,7 @@ def get_data_loader(dataset_path, batch_size=DEFAULT_BATCH_SIZE, num_workers=DEF
         dataset_path (str): Path to the dataset directory.
         batch_size (int): Batch size.
         num_workers (int): Number of workers for data loading.
+        custom_transform (torch.nn.Module): Custom transformation pipeline.
 
     Returns:
         tuple: A tuple containing:
@@ -69,18 +73,24 @@ def get_data_loader(dataset_path, batch_size=DEFAULT_BATCH_SIZE, num_workers=DEF
     # Loading the dataset
     raw_dataset = datasets.ImageFolder(root=dataset_path)
 
-    # Define GPU transformations
-    gpu_transform = get_gpu_transform()
+    # Use custom transformations if provided, otherwise default to get_gpu_transform
+    transform = custom_transform if custom_transform else get_gpu_transform()
 
     # Wrap dataset with GPU transformations
-    dataset = GPUTransformDataset(raw_dataset, gpu_transform)
+    dataset = GPUTransformDataset(raw_dataset, transform)
 
     # Creating the DataLoader
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=num_workers)
 
     return loader, raw_dataset.classes
 
-def get_split_data_loaders(dataset_path, batch_size=DEFAULT_BATCH_SIZE, num_workers=DEFAULT_NUM_WORKERS, split_ratio=DEFAULT_SPLIT_RATIO):
+def get_split_data_loaders(
+        dataset_path,
+        batch_size=DEFAULT_BATCH_SIZE,
+        num_workers=DEFAULT_NUM_WORKERS,
+        split_ratio=DEFAULT_SPLIT_RATIO,
+        custom_transform=None
+):
     """
     Prepares DataLoaders for the training and test sets with automatic splitting.
 
@@ -89,6 +99,7 @@ def get_split_data_loaders(dataset_path, batch_size=DEFAULT_BATCH_SIZE, num_work
         batch_size (int): Batch size.
         split_ratio (float): Percentage of data used for the training set (default 0.8).
         num_workers (int): Number of workers for data loading.
+        custom_transform (torch.nn.Module): Custom transformation pipeline.
 
     Returns:
         tuple: A tuple containing:
@@ -111,12 +122,12 @@ def get_split_data_loaders(dataset_path, batch_size=DEFAULT_BATCH_SIZE, num_work
     test_size = len(raw_dataset) - train_size
     train_dataset, test_dataset = random_split(raw_dataset, [train_size, test_size])
 
-    # Define GPU transformations
-    gpu_transform = get_gpu_transform()
+    # Use custom transformations if provided, otherwise default to get_gpu_transform
+    transform = custom_transform if custom_transform else get_gpu_transform()
 
     # Wrap datasets with GPU transformations
-    train_dataset = GPUTransformDataset(train_dataset, gpu_transform)
-    test_dataset = GPUTransformDataset(test_dataset, gpu_transform)
+    train_dataset = GPUTransformDataset(train_dataset, transform)
+    test_dataset = GPUTransformDataset(test_dataset, transform)
 
     # Creating the DataLoaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True,

@@ -2,7 +2,16 @@ from tqdm import tqdm
 import torch.optim as optim
 import torch.nn as nn
 
-def train_model(model, train_loader, device, num_epochs=10, lr=0.001):
+DEFAULT_NUM_EPOCHS = 20
+
+def train_model(
+        model,
+        train_loader,
+        device,
+        num_epochs = DEFAULT_NUM_EPOCHS,
+        criterion=None,
+        optimizer=None
+):
     """
     Trains the model using the specified training dataset and hyperparameters.
 
@@ -11,11 +20,17 @@ def train_model(model, train_loader, device, num_epochs=10, lr=0.001):
         train_loader (DataLoader): DataLoader for the training dataset.
         device (torch.device): The device (CPU or GPU) to run the training on.
         num_epochs (int): Number of epochs for training.
-        lr (float): Learning rate for the optimizer.
+        criterion (torch.nn.Module): Loss function.
+        optimizer (torch.optim.Optimizer): Optimizer for training
     """
-    # Define the loss function (Cross-Entropy) and the optimizer (Adam)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    # Define the loss function (default: Cross-Entropy Loss)
+    criterion = criterion if criterion else nn.CrossEntropyLoss()
+
+    # Define the optimizer (default: Adam)
+    optimizer = optimizer if optimizer else optim.Adam(model.parameters(), lr=0.001)
+
+    # List to store loss and accuracy for each epoch
+    epoch_stats = []
 
     # Training loop for the specified number of epochs
     for epoch in range(num_epochs):
@@ -55,6 +70,6 @@ def train_model(model, train_loader, device, num_epochs=10, lr=0.001):
                 "Loss": f"{running_loss / (total or 1):.4f}",
                 "Acc": f"{100. * correct / (total or 1):.2f}%"
             })
+        epoch_stats.append((running_loss / len(train_loader), 100. * correct / total))
 
-        # Print summary for the current epoch
-        print(f"Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_loader):.4f}, Acc: {100.*correct/total:.2f}%")
+    return epoch_stats

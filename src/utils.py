@@ -14,7 +14,7 @@ def save_model(model, path=DEFAULT_MODEL_PATH):
     torch.save(model.state_dict(), path)
     print(f"Model saved at {path}")
 
-def load_model(model_class, path=DEFAULT_MODEL_PATH, device=torch.device("cpu")):
+def load_model(model_class, path=DEFAULT_MODEL_PATH, device=torch.device("cuda")):
         """
         Loads the model weights (state_dict) into a given model class.
 
