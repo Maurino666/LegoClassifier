@@ -29,7 +29,12 @@ def train_and_evaluate(
     print(f"Saving outputs to: {output_dir}")
 
     # Load the dataset and split into training and test sets
-    train_loader, test_loader, classes = get_split_data_loaders(dataset_path, batch_size, num_workers, custom_transform)
+    train_loader, test_loader, classes = get_split_data_loaders(
+        dataset_path,
+        batch_size,
+        num_workers,
+        custom_transform = custom_transform
+    )
     print("Classes loaded...")
 
     # Initialize the model with the number of output classes
