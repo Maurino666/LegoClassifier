@@ -1,3 +1,4 @@
+from src.data_preprocessing import get_split_data_loaders
 from src.model import SimpleCNN
 from src.model import DeeperCNN
 from train_and_evaluate import train_and_evaluate
@@ -11,7 +12,7 @@ def main():
     num_workers = 8  # Number of workers for data loading
     num_epochs = 20  # Number of epochs for training
 
-    #Train and evaluate deeper model with no custom transformations
+    # Train and evaluate deeper model with no custom transformations
     train_and_evaluate(dataset_path, batch_size, num_workers, num_epochs, DeeperCNN)
 
     # Parameters

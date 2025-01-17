@@ -27,7 +27,7 @@ def train_model(
     criterion = criterion if criterion else nn.CrossEntropyLoss()
 
     # Define the optimizer (default: Adam)
-    optimizer = optimizer if optimizer else optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optimizer if optimizer else optim.Adam(model.parameters(), lr=0.0001)
 
     # List to store loss and accuracy for each epoch
     epoch_stats = []
