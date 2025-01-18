@@ -57,15 +57,17 @@ def train_and_evaluate(
     print(f"Evaluation Complete!/nTest Accuracy: {accuracy:.2f}")
 
 
-    # Save the evaluation results to the output directory
+    # Save the evaluation results to the output directory with all the information
     evaluation_path = os.path.join(output_dir, "evaluation_results.txt")
     with open(evaluation_path, "w") as f:
+        # Write the training and evaluation details
         f.write(f"Dataset: {dataset_path}\n")
         f.write(f"Model: {model_class.__name__}\n")
         f.write(f"Batch Size: {batch_size}\n")
         f.write(f"Number of Workers: {num_workers}\n")
         f.write(f"Number of Epochs: {num_epochs}\n")
         f.write(f"Training Time: {training_time:.2f} seconds\n")
+        # Write custom transformations, loss function, and optimizer if provided
         f.write("\nCustom Transformations:\n")
         f.write(f"{custom_transform}\n" if custom_transform else "Default\n")
         f.write("\nLoss Function:\n")
@@ -73,8 +75,10 @@ def train_and_evaluate(
         f.write("\nOptimizer:\n")
         f.write(f"{optimizer}\n" if optimizer else "Default\n")
         f.write("\nEvaluation Results:\n")
+        # Write the evaluation metrics
         f.write(f"Test Accuracy: {accuracy:.2f}\n")
         f.write(report)
+        # Write the epoch-wise training statistics
         f.write("\nTraining Epoch Statistics:\n")
         for epoch, (loss, acc) in enumerate(epoch_stats, start=1):
             f.write(f"Epoch {epoch}: Loss={loss:.4f}, Accuracy={acc:.2f}%\n")
