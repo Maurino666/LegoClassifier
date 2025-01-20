@@ -15,7 +15,8 @@ def train_and_evaluate(
         model_class,
         custom_transform=None,
         criterion=None,
-        optimizer=None
+        optimizer=None,
+        scheduler = None
 ):
 
     # Use GPU with CUDA if available, otherwise fallback to CPU
@@ -43,7 +44,15 @@ def train_and_evaluate(
 
     # Train the model on the training set
     start_time = time()
-    epoch_stats = train_model(model, train_loader, device, num_epochs, criterion, optimizer)
+    epoch_stats = train_model(
+        model,
+        train_loader,
+        device,
+        num_epochs,
+        criterion,
+        optimizer,
+        scheduler
+    )
     training_time = time() - start_time
     print("Training completed!")
 
@@ -67,17 +76,27 @@ def train_and_evaluate(
         f.write(f"Number of Workers: {num_workers}\n")
         f.write(f"Number of Epochs: {num_epochs}\n")
         f.write(f"Training Time: {training_time:.2f} seconds\n")
-        # Write custom transformations, loss function, and optimizer if provided
+
+        # Write custom transformations, loss function, optimizer and scheduler if provided
         f.write("\nCustom Transformations:\n")
         f.write(f"{custom_transform}\n" if custom_transform else "Default\n")
         f.write("\nLoss Function:\n")
         f.write(f"{criterion}\n" if criterion else "Default\n")
         f.write("\nOptimizer:\n")
         f.write(f"{optimizer}\n" if optimizer else "Default\n")
-        f.write("\nEvaluation Results:\n")
+        f.write("\nScheduler:\n")
+        if scheduler:
+            scheduler_info = str(scheduler.__class__.__name__)  # Get scheduler type
+            scheduler_params = scheduler.state_dict()  # Get scheduler parameters
+            f.write(f"{scheduler_info} with parameters:\n{scheduler_params}\n")
+        else:
+            f.write("Default\n")
+
         # Write the evaluation metrics
+        f.write("\nEvaluation Results:\n")
         f.write(f"Test Accuracy: {accuracy:.2f}\n")
         f.write(report)
+
         # Write the epoch-wise training statistics
         f.write("\nTraining Epoch Statistics:\n")
         for epoch, (loss, acc) in enumerate(epoch_stats, start=1):
