@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 from src.utils import load_model
 
@@ -54,7 +54,8 @@ def evaluate_model(model, test_loader, device, class_names):
     # Compute metrics
     accuracy = accuracy_score(all_labels, all_predictions)
     report = classification_report(all_labels, all_predictions, target_names=class_names)
-    return accuracy, report, all_labels, all_predictions
+    cm = confusion_matrix(all_labels, all_predictions)
+    return accuracy, report, all_labels, all_predictions, cm
 
 def visualize_predictions(test_loader, class_names, model, device, num_images=4):
     """

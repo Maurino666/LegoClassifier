@@ -1,15 +1,15 @@
-from src.model import SimpleCNN, DeeperCNN
+from src.model import DeeperCNN
 from train_and_evaluate import train_and_evaluate
 import torch
 import kornia.augmentation as k
 
-def create_optimizer_factory(optimizer_class=torch.optim.Adam, **kwargs):
+def create_optimizer_factory(optimizer_class, **kwargs):
     """Factory for creating an optimizer."""
     def optimizer_factory(model):
         return optimizer_class(model.parameters(), **kwargs)
     return optimizer_factory
 
-def create_scheduler_factory(scheduler_class=torch.optim.lr_scheduler.StepLR, **kwargs):
+def create_scheduler_factory(scheduler_class, **kwargs):
     """Factory for creating a scheduler."""
     def scheduler_factory(optimizer):
         return scheduler_class(optimizer, **kwargs)
@@ -30,9 +30,9 @@ def main():
     )
 
     # Define optimizer and scheduler factories
-    optimizer_factory = create_optimizer_factory(torch.optim.Adam, lr=0.001)
+    optimizer_factory = create_optimizer_factory(torch.optim.Adam, lr=0.0001)
     scheduler_factory = create_scheduler_factory(
-        torch.optim.lr_scheduler.StepLR, step_size=10, gamma=0.1
+        torch.optim.lr_scheduler.StepLR, step_size=10, gamma=0.5
     )
 
     # Train and evaluate the model
@@ -47,6 +47,30 @@ def main():
         optimizer_factory=optimizer_factory,  # Pass the optimizer factory
         scheduler_factory=scheduler_factory  # Pass the scheduler factory
     )
+
+    # Define optimizer and scheduler factories for SGD
+    optimizer_factory = create_optimizer_factory(torch.optim.SGD, lr=0.001, momentum=0.9)
+    scheduler_factory = create_scheduler_factory(
+        torch.optim.lr_scheduler.CosineAnnealingLR,
+        T_max=20,  # Numero massimo di epoche
+        eta_min=0  # Learning rate minimo
+    )
+
+    # Train and evaluate the model with SGD
+    train_and_evaluate(
+        dataset_path=dataset_path,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        num_epochs=num_epochs,
+        model_class=DeeperCNN,
+        custom_transform=custom_transform,
+        criterion=None,  # Use default criterion
+        optimizer_factory=optimizer_factory,  # Pass the SGD optimizer factory
+        scheduler_factory=scheduler_factory  # Pass the scheduler factory
+    )
+
+
+
 
 if __name__ == "__main__":
     main()

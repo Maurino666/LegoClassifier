@@ -63,7 +63,8 @@ def train_model(
             # Update the progress bar with loss and accuracy
             progress_bar.set_postfix({
                 "Loss": f"{running_loss / (total or 1):.4f}",
-                "Acc": f"{100. * correct / (total or 1):.2f}%"
+                "Acc": f"{100. * correct / (total or 1):.2f}%",
+                "LR": f"{optimizer.param_groups[0]['lr']:.6f}"
             })
 
         # Calculate average loss for the epoch

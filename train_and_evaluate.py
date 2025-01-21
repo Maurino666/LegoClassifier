@@ -2,6 +2,8 @@ import os
 import torch
 from datetime import datetime
 from time import time
+import matplotlib.pyplot as plt
+import seaborn as sns
 from src.data_preprocessing import get_split_data_loaders
 from src.train import train_model
 from src.utils import save_model
@@ -66,7 +68,7 @@ def train_and_evaluate(
     # Define default criterion, optimizer, and scheduler
     if criterion is None:
         criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optimizer_factory(model) if callable(optimizer_factory) else torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optimizer_factory(model) if callable(optimizer_factory) else torch.optim.Adam(model.parameters(), lr=0.0001)
     scheduler = scheduler_factory(optimizer) if callable(scheduler_factory) else None
 
     # Train the model on the training set
@@ -93,7 +95,7 @@ def train_and_evaluate(
     print(f"Model saved to {model_path}")
 
     # Evaluate the model on the test set
-    accuracy, report, labels, predictions = evaluate_model(model, test_loader, device, classes)
+    accuracy, report, labels, predictions, cm = evaluate_model(model, test_loader, device, classes)
     print(f"Evaluation Complete!\nTest Accuracy: {accuracy:.2f}")
 
     # Save the evaluation results to the output directory with all the information
@@ -140,3 +142,13 @@ def train_and_evaluate(
             f.write(f"Epoch {epoch}: Loss={loss:.4f}, Accuracy={acc:.2f}%\n")
 
     print(f"Results saved to {evaluation_path}")
+
+    cm_path = os.path.join(output_dir, "confusion_matrix.png")
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=classes, yticklabels=classes)
+    plt.title("Confusion Matrix")
+    plt.ylabel("True Labels")
+    plt.xlabel("Predicted Labels")
+    plt.savefig(cm_path)
+    plt.close()
+    print(f"Confusion matrix saved to {cm_path}")
